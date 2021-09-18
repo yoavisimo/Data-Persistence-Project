@@ -12,7 +12,9 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
-    
+
+    public Text HiScoreText;
+
     private bool m_Started = false;
     private int m_Points;
     
@@ -36,6 +38,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        UpdateScoreAndNameText();
     }
 
     private void Update()
@@ -66,6 +70,19 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+
+        if(m_Points > MemoryManager.instance.hiScoreData.hiScore)
+        {
+            MemoryManager.instance.hiScoreData.hiScore = m_Points;
+            MemoryManager.instance.hiScoreData.name = MemoryManager.instance.userName;
+            MemoryManager.instance.SaveNameAndHiScore();
+            UpdateScoreAndNameText();
+        }
+    }
+
+    void UpdateScoreAndNameText()
+    {
+        HiScoreText.text = $"Best Score : {MemoryManager.instance.hiScoreData.name} : {MemoryManager.instance.hiScoreData.hiScore}";
     }
 
     public void GameOver()
