@@ -9,7 +9,9 @@ using System.IO;
 public class MemoryManager : MonoBehaviour
 {
     public static MemoryManager instance;
-    public int hiScore;
+    public int hiScore = 0 ;
+    public string hiScoreName = "";
+
     public string userName;
 
     public InputField usernameText;
@@ -20,10 +22,20 @@ public class MemoryManager : MonoBehaviour
     {
         public string name;
         public int hiScore;
+
     }
 
-    public PlayerData hiScoreData;
-    
+    [System.Serializable]
+    public class AllHiScores
+    {
+        public List<PlayerData> hiScoreData = new List<PlayerData>();
+    }
+
+
+
+    public AllHiScores ahs;
+    public string tmpJson;
+
     private void Awake()
     {
         if(instance != null)
@@ -38,8 +50,13 @@ public class MemoryManager : MonoBehaviour
 
     private void Start()
     {
-        hiScoreData = new PlayerData();
+        ahs = new AllHiScores();
         LoadNameAndHiScore();
+        if(ahs.hiScoreData.Count > 0)
+        {
+            hiScoreName = ahs.hiScoreData[0].name;
+            hiScore = ahs.hiScoreData[0].hiScore;
+        }
     }
     public void StartGame()
     {
@@ -59,24 +76,42 @@ public class MemoryManager : MonoBehaviour
 #endif
     }
 
+    public void ShowHiScores()
+    {
+        SceneManager.LoadScene(2);
+    }
     public void SaveNameAndHiScore()
     {
-        string json = JsonUtility.ToJson(hiScoreData);
-        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+        PlayerData singleInfo = new PlayerData();
+        singleInfo.hiScore = hiScore;
+        singleInfo.name = hiScoreName;
+        ahs.hiScoreData.Add(singleInfo);
 
+        ahs.hiScoreData.Sort((f, s) => f.hiScore.CompareTo(s.hiScore));
+        ahs.hiScoreData.Reverse();
+        string json = JsonUtility.ToJson(ahs);
+        
+        Debug.Log(json);
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
     }
 
     public void LoadNameAndHiScore()
     {
-        PlayerData data = new PlayerData();
+        tmpJson = File.ReadAllText(Application.persistentDataPath + "/savefile.json");
+        ahs = JsonUtility.FromJson<AllHiScores>(tmpJson);
 
-        string json = File.ReadAllText(Application.persistentDataPath + "/savefile.json");
-        data = JsonUtility.FromJson<PlayerData>(json);
+        Debug.Log(ahs);        
+    }
 
+    public string printHiScores()
+    {
+        string output = "";
 
-        hiScoreData.hiScore = data.hiScore;
-        hiScoreData.name = data.name;
-        //Debug.Log(hiScore);
-        hiScoreText.text = "Best Score : " + hiScoreData.hiScore;
+        foreach(PlayerData item in ahs.hiScoreData)
+        {
+            output += item.name + " Has " + item.hiScore + " Points" + System.Environment.NewLine;
+        }
+
+        return output;
     }
 }

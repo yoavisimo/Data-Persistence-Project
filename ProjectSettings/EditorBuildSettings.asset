@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/main.unity
     guid: 78a510c781f19db4da14f78ebb30946a
+  - enabled: 1
+    path: Assets/Scenes/HiScores.unity
+    guid: 079af0bdc66939d46a1a633eb16c5e95
   m_configObjects: {}

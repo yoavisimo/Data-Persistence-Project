@@ -71,23 +71,34 @@ public class MainManager : MonoBehaviour
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
 
-        if(m_Points > MemoryManager.instance.hiScoreData.hiScore)
+        if (m_Points > MemoryManager.instance.hiScore)
         {
-            MemoryManager.instance.hiScoreData.hiScore = m_Points;
-            MemoryManager.instance.hiScoreData.name = MemoryManager.instance.userName;
-            MemoryManager.instance.SaveNameAndHiScore();
+
+            MemoryManager.instance.hiScore = m_Points;
+            MemoryManager.instance.hiScoreName = MemoryManager.instance.userName;
+
             UpdateScoreAndNameText();
         }
+       
     }
 
     void UpdateScoreAndNameText()
     {
-        HiScoreText.text = $"Best Score : {MemoryManager.instance.hiScoreData.name} : {MemoryManager.instance.hiScoreData.hiScore}";
+        string tmpName = "";
+        int tmpScore = 0;
+        if(MemoryManager.instance.hiScore >= 0)
+        {
+            tmpName = MemoryManager.instance.hiScoreName;
+            tmpScore = MemoryManager.instance.hiScore;
+        }
+
+        HiScoreText.text = $"Best Score : {tmpName} : {tmpScore}";
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        MemoryManager.instance.SaveNameAndHiScore();
     }
 }
